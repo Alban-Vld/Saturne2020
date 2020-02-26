@@ -16,12 +16,17 @@ import org.centrale.pgrou.items.Contenuquiz;
 import org.centrale.pgrou.items.Groupe;
 import org.centrale.pgrou.items.Notation;
 import org.centrale.pgrou.items.Question;
+import org.centrale.pgrou.items.Qcm;
+import org.centrale.pgrou.items.Reponse;
+import org.centrale.pgrou.items.Qcmrep;
 import org.centrale.pgrou.items.Quiz;
 import org.centrale.pgrou.items.Test;
 import org.centrale.pgrou.repositories.ContenuquizRepository;
 import org.centrale.pgrou.repositories.GroupeRepository;
 import org.centrale.pgrou.repositories.NotationRepository;
 import org.centrale.pgrou.repositories.QuizRepository;
+import org.centrale.pgrou.repositories.QuestionRepository;
+import org.centrale.pgrou.repositories.ReponseRepository;
 import org.centrale.pgrou.repositories.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -46,6 +51,10 @@ public class SessionController {
     private QuizRepository quizRepository;
     @Autowired
     private TestRepository testRepository;
+    @Autowired
+    private QuestionRepository questionRepository;
+    @Autowired
+    private ReponseRepository reponseRepository;
     @Autowired
     private ContenuquizRepository contenuquizRepository;
     
@@ -73,7 +82,68 @@ public class SessionController {
         }
         return returned;
     }
+	
+    @RequestMapping(value="creerQuestion.do",method=RequestMethod.POST)
+    public ModelAndView creerQuestion(HttpServletRequest request) throws ParseException {
+        ModelAndView returned = new ModelAndView("ajax");
+        JSONObject object = new JSONObject();
+        
+        String enonce = request.getParameter("enonce");
+        String estPriveeString = request.getParameter("estPrivee");
+        Boolean estPrivee = Boolean.parseBoolean(estPriveeString);
+        
+        Question question = new Question();
+        question.setEnonce(enonce);
+        question.setEstprivee(estPrivee);
+        
+        Long millis = System.currentTimeMillis();
+        Date date = new Date(millis);
+        question.setDatecreationquestion(date);
+        
+        Question question1 = questionRepository.save(question);
+        
+        String repUniqueString = request.getParameter("repUnique");
+        Boolean repUnique = Boolean.parseBoolean(repUniqueString);
+        
+        Qcm qcm = new Qcm();
+        qcm.setQuestionid(question);
+        qcm.setRepunique(repUnique);
+        
+        //Qcm qcm1 = qcmRepository.save(reponse);
+        
+        return returned.addObject("theResponse",object.toString());
+        
+    }
     
+    @RequestMapping(value="creerReponse.do",method=RequestMethod.POST)
+    public ModelAndView creerReponse(HttpServletRequest request) throws ParseException {
+        ModelAndView returned = new ModelAndView("ajax");
+        JSONObject object = new JSONObject();
+        
+        String correcteString = request.getParameter("correcte");
+        Boolean correcte = Boolean.parseBoolean(correcteString);
+        String questionId = request.getParameter("questionId");
+        
+        Reponse reponse = new Reponse();
+        reponse.setCorrecte(correcte);
+        Question question = questionRepository.findById(Integer.parseInt(questionId));
+        reponse.setQuestionid(question);
+        
+        Reponse reponse1 = reponseRepository.save(reponse);
+        
+        //Création du QCMRep
+        String enonce = request.getParameter("enonceReponse");
+        
+        Qcmrep qcmrep = new Qcmrep();
+        qcmrep.setEnonce(enonce);
+        qcmrep.setReponseid(reponse);
+        
+        //Qcmrep qcmrep1 = qcmrepRepository.save(reponse);
+        
+        return returned.addObject("theResponse",object.toString());
+        
+    }
+
     @RequestMapping(value="creerTest.do",method=RequestMethod.POST)
     public ModelAndView creerTest1(HttpServletRequest request) throws ParseException {
         ModelAndView returned = new ModelAndView("ajax");
