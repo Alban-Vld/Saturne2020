@@ -40,9 +40,16 @@
             <table>
                 <tr> 
                     <td>Ecrivez l'énoncé :</td>
-                    <td><input name="enonce" type="string"/></td>
+                    <td><input name="enonce" type="text"/></td>
                     <td>La question est elle privée ? </td>
-                    <td><input name="estPrivee" type="boolean"/></td>
+                    <div>
+					  <input type="radio" id="yes" name="estPrivee">
+					  <label for="yes">Oui</label>
+					</div>
+					<div>
+					  <input type="radio" id="no" name="estPrivee" checked>
+					  <label for="no">Non</label>
+					</div>
                 </tr>
 				<tr>   
                     <td>Choisissez les réponses :</td>
@@ -53,10 +60,10 @@
                 </select></td>
                 </tr>
             </table>
-            <button onClick="creerQuestion(this);"></button>
+            <button type="submit" onClick="creerQuestion(this);">Valider</button>
         </div>
         <div id="droite" class="box"> 
         </div>
-        <footer> Mdr j'ai repris ton truc Marion </footer>
+        <footer></footer>
     </body>
 </html>
