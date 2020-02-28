@@ -126,8 +126,11 @@ public class SessionController {
         
         Reponse reponse = new Reponse();
         reponse.setCorrecte(correcte);
-        Question question = questionRepository.findById(Integer.parseInt(questionId));
-        reponse.setQuestionid(question);
+        Optional<Question> question = questionRepository.findById(Integer.parseInt(questionId));
+        if (question.isPresent()){
+            Question unequestion = question.get();
+            reponse.setQuestionid(unequestion);
+            }
         
         Reponse reponse1 = reponseRepository.save(reponse);
         
